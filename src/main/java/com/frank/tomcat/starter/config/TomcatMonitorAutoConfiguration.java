@@ -13,6 +13,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(TomcatMonitorProperties.class)
 public class TomcatMonitorAutoConfiguration {
+
+    @Bean
+    public TomcatConfig tomcatConfig() {
+        return new TomcatConfig();
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public TomcatMetricsScheduler tomcatMetricsScheduler(ServletWebServerApplicationContext applicationContext,

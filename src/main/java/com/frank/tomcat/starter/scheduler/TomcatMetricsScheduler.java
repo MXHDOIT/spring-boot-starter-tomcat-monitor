@@ -1,6 +1,7 @@
 package com.frank.tomcat.starter.scheduler;
 
 import com.frank.tomcat.starter.config.TomcatMonitorProperties;
+import com.frank.tomcat.starter.decorator.TomcatExecutorMonitoringDecorator;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 import org.slf4j.Logger;
@@ -38,12 +39,11 @@ public class TomcatMetricsScheduler {
                 Connector[] connectors = tomcatWebServer.getTomcat().getService().findConnectors();
                 for (Connector connector : connectors) {
                     Executor executor = connector.getProtocolHandler().getExecutor();
-                    if (executor instanceof ThreadPoolExecutor) {
-                        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
+                    if (executor instanceof TomcatExecutorMonitoringDecorator) {
+                        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) ((TomcatExecutorMonitoringDecorator) executor).getExecutor();
                         int maximumPoolSize = threadPoolExecutor.getMaximumPoolSize();
                         int activeSize = threadPoolExecutor.getActiveCount();
                         int queueSize = threadPoolExecutor.getQueue().size();
-                        // 从进入队列到执行耗时较难直接获取，这里暂时不实现
                         logger.info("Tomcat Max Thread Size {} Active Thread Size: {}, Queue Size: {}", maximumPoolSize, activeSize, queueSize);
                     }
                 }
